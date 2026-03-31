@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ljj099/linweide 仓库上传指南</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+  color: #333;
+}
+.container {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e5e7eb;
+}
+h1 {
+  color: #1f2937;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+.repo-info {
+  background: #f0f9ff;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+}
+.repo-info h2 {
+  color: #1d4ed8;
+  margin-bottom: 15px;
+}
+.repo-url {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 15px;
+  border-radius: 10px;
+  font-family: monospace;
+  font-size: 16px;
+  word-break: break-all;
+  margin: 15px 0;
+}
+.step-container {
+  margin: 30px 0;
+}
+.step {
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 20px;
+  border-left: 4px solid #6366f1;
+  position: relative;
+}
+.step-number {
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  background: #6366f1;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+}
+.step-content {
+  margin-top: 10px;
+}
+.step h3 {
+  color: #1f2937;
+  margin-bottom: 15px;
+  font-size: 20px;
+  padding-left: 30px;
+}
+.file-list {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+}
+.file-list h4 {
+  color: #374151;
+  margin-bottom: 15px;
+}
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  border-bottom: 1px solid #f3f4f6;
+}
+.file-item:last-child {
+  border-bottom: none;
+}
+.file-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  color: #6366f1;
+}
+.file-name {
+  font-family: monospace;
+  font-size: 15px;
+}
+.file-size {
+  margin-left: auto;
+  color: #6b7280;
+  font-size: 14px;
+}
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  margin: 30px 0;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  color: white;
+  text-decoration: none;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  border: none;
+  min-width: 200px;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102,126,234,.3);
+}
+.btn-primary {
+  background: #10b981;
+}
+.btn-secondary {
+  background: #f59e0b;
+}
+.btn-icon {
+  margin-right: 8px;
+  font-size: 18px;
+}
+.important-note {
+  background: #fef2f2;
+  border: 2px solid #fecaca;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 25px 0;
+}
+.important-note h3 {
+  color: #dc2626;
+  margin-bottom: 12px;
+}
+.success-preview {
+  background: #ecfdf5;
+  border: 2px solid #a7f3d0;
+  border-radius: 12px;
+  padding: 25px;
+  margin: 25px 0;
+  text-align: center;
+}
+.success-preview h3 {
+  color: #065f46;
+  margin-bottom: 15px;
+}
+.preview-url {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1d4ed8;
+  margin: 15px 0;
+  word-break: break-all;
+}
+.screenshot-guide {
+  margin: 20px 0;
+}
+.screenshot-img {
+  max-width: 100%;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  margin: 10px 0;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🚀 ljj099/linweide 仓库上传指南</h1>
+    <p>专为你的仓库定制的上传步骤</p>
+  </div>
+  
+  <div class="repo-info">
+    <h2>📦 仓库信息</h2>
+    <p><strong>GitHub用户名</strong>: ljj099</p>
+    <p><strong>仓库名称</strong>: linweide</p>
+    <div class="repo-url">
+      https://github.com/ljj099/linweide.git
+    </div>
+    <p><strong>状态</strong>: ✅ 仓库已创建，等待文件上传</p>
+  </div>
+  
+  <div class="step-container">
+    <div class="step">
+      <div class="step-number">1</div>
+      <h3>登录GitHub</h3>
+      <div class="step-content">
+        <p>确保你已经登录到你的GitHub账号：</p>
+        <ul style="margin: 10px 0 10px 20px; color: #6b7280;">
+          <li>访问：<a href="https://github.com/login" target="_blank">https://github.com/login</a></li>
+          <li>输入用户名：ljj099</li>
+          <li>输入密码登录</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="step-number">2</div>
+      <h3>打开你的仓库</h3>
+      <div class="step-content">
+        <p>点击以下链接直接进入你的仓库：</p>
+        <div class="repo-url" style="background: #0ea5e9; color: white; cursor: pointer;" 
+             onclick="window.open('https://github.com/ljj099/linweide', '_blank')">
+          https://github.com/ljj099/linweide
+        </div>
+        <p>你应该能看到一个空的仓库页面。</p>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="step-number">3</div>
+      <h3>上传问卷文件</h3>
+      <div class="step-content">
+        <div class="file-list">
+          <h4>📁 需要上传的文件（共9个文件）：</h4>
+          <div class="file-item">
+            <div class="file-icon">📄</div>
+            <div class="file-name">index.html</div>
+            <div class="file-size">问卷主页面</div>
+          </div>
+          <div class="file-item">
+            <div class="file-icon">🔧</div>
+            <div class="file-name">admin.html</div>
+            <div class="file-size">管理后台</div>
+          </div>
+          <div class="file-item">
+            <div class="file-icon">⚙️</div>
+            <div class="file-name">apply_config.html</div>
+            <div class="file-size">配置应用</div>
+          </div>
+          <div class="file-item">
+            <div class="file-icon">📋</div>
+            <div class="file-name">README.md</div>
+            <div class="file-size">项目说明</div>
+          </div>
+          <div class="file-item">
+            <div class="file-icon">🔒</div>
+            <div class="file-name">.gitignore</div>
+            <div class="file-size">Git忽略文件</div>
+          </div>
+          <div class="file-item">
+            <div class="file-icon">📊</div>
+            <div class="file-name">save_config.js</div>
+            <div class="file-size">配置保存脚本</div>
+          </div>
+          <div class="file-item">
+            <div class="file-icon">📱</div>
+            <div class="file-name">qr_simple.html</div>
+            <div class="file-size">二维码页面</div>
+          </div>
+          <div class="file-item">
+            <div class="file-icon">🌐</div>
+            <div class="file-name">public_access.html</div>
+            <div class="file-size">公网访问指南</div>
+          </div>
+          <div class="file-item">
+            <div class="file-icon">🚀</div>
+            <div class="file-name">deploy_instructions.html</div>
+            <div class="file-size">部署指南</div>
+          </div>
+        </div>
+        
+        <div class="screenshot-guide">
+          <h4>📸 上传步骤截图：</h4>
+          <p>1. 在仓库页面，点击"Add file"按钮</p>
+          <p>2. 选择"Upload files"</p>
+          <p>3. 将上面列出的9个文件拖拽到上传区域</p>
+          <p>4. 滚动到底部，填写提交信息：</p>
+          <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 10px 0;">
+            <strong>Commit message（提交信息）</strong>:<br>
+            <code style="color: #1d4ed8;">添加问卷系统文件</code>
+          </div>
+          <p>5. 点击绿色的"Commit changes"按钮</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="step-number">4</div>
+      <h3>开启GitHub Pages</h3>
+      <div class="step-content">
+        <ol style="margin-left: 20px; color: #6b7280;">
+          <li>上传完成后，点击仓库顶部的"Settings"（设置）</li>
+          <li>在左侧菜单找到"Pages"（页面）</li>
+          <li>在"Source"下选择："Deploy from a branch"</li>
+          <li>在"Branch"下选择：<strong>main</strong></li>
+          <li>在"Folder"下选择：<strong>/ (root)</strong></li>
+          <li>点击"Save"（保存）</li>
+          <li>等待1-2分钟，会出现绿色部署成功标志</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  
+  <div class="action-buttons">
+    <button class="btn" onclick="window.open('https://github.com/ljj099/linweide', '_blank')">
+      <span class="btn-icon">📂</span> 打开我的仓库
+    </button>
+    <button class="btn btn-primary" onclick="window.open('https://github.com/ljj099/linweide/upload/main', '_blank')">
+      <span class="btn-icon">⬆️</span> 直接上传文件
+    </button>
+    <button class="btn btn-secondary" onclick="window.open('https://github.com/ljj099/linweide/settings/pages', '_blank')">
+      <span class="btn-icon">⚙️</span> 开启Pages设置
+    </button>
+  </div>
+  
+  <div class="success-preview">
+    <h3>🎉 部署成功后的访问地址</h3>
+    <p>上传并开启Pages后，你的问卷将可以通过以下地址访问：</p>
+    <div class="preview-url">
+      https://ljj099.github.io/linweide/index.html
+    </div>
+    <p><strong>重要链接：</strong></p>
+    <ul style="list-style: none; padding: 10px 0;">
+      <li>📋 <strong>问卷页面</strong>: https://ljj099.github.io/linweide/index.html</li>
+      <li>🔧 <strong>管理后台</strong>: https://ljj099.github.io/linweide/admin.html</li>
+      <li>⚙️ <strong>密码</strong>: admin888</li>
+    </ul>
+  </div>
+  
+  <div class="important-note">
+    <h3>⚠️ 重要注意事项</h3>
+    <p>1. <strong>上传顺序</strong>：先上传所有文件，再开启GitHub Pages</p>
+    <p>2. <strong>等待时间</strong>：开启Pages后需要等待1-2分钟才能访问</p>
+    <p>3. <strong>测试访问</strong>：用手机移动数据测试是否能打开</p>
+    <p>4. <strong>问题排查</strong>：如果无法访问，检查Pages设置是否正确</p>
+  </div>
+  
+  <div style="text-align: center; margin-top: 30px; color: #6b7280;">
+    <p>完成以上步骤后，你的问卷就可以被任何人通过互联网访问了！</p>
+    <p>如果遇到问题，可以截图错误信息发给我。</p>
+  </div>
+</div>
+
+<script>
+// 自动打开仓库页面
+window.addEventListener('DOMContentLoaded', function() {
+  // 可以自动打开仓库，但先不自动打开，让用户手动点击
+  console.log('仓库信息已加载：https://github.com/ljj099/linweide');
+});
+
+// 复制部署地址
+function copyDeployURL() {
+  const url = 'https://ljj099.github.io/linweide/index.html';
+  navigator.clipboard.writeText(url).then(() => {
+    alert('✅ 部署地址已复制到剪贴板！');
+  });
+}
+</script>
+</body>
+</html>

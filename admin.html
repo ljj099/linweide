@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问卷管理后台</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f3f4f6;
+  min-height: 100vh;
+}
+
+/* ── 登录 ── */
+.login-overlay {
+  position: fixed; inset: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999;
+}
+.login-box {
+  background: white; border-radius: 20px;
+  padding: 40px 48px; width: 360px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25); text-align: center;
+}
+.login-box .icon { font-size: 48px; margin-bottom: 16px; }
+.login-box h2 { font-size: 22px; color: #1f2937; margin-bottom: 6px; }
+.login-box p  { color: #6b7280; font-size: 14px; margin-bottom: 28px; }
+.login-box input {
+  width: 100%; padding: 12px 16px;
+  border: 2px solid #e5e7eb; border-radius: 10px;
+  font-size: 16px; outline: none; margin-bottom: 16px;
+  transition: border-color .2s; text-align: center; letter-spacing: 4px;
+}
+.login-box input:focus { border-color: #6366f1; }
+.login-box .btn-login {
+  width: 100%;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  color: white; border: none; padding: 13px;
+  border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer;
+}
+.login-error { color: #ef4444; font-size: 13px; margin-top: 10px; display: none; }
+
+/* ── 顶栏 ── */
+.topbar {
+  background: linear-gradient(135deg,#1e1b4b,#312e81);
+  padding: 0 32px; display: flex;
+  align-items: center; justify-content: space-between;
+  height: 64px; box-shadow: 0 4px 20px rgba(0,0,0,.2);
+  position: sticky; top: 0; z-index: 100;
+}
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-logo { font-size: 22px; }
+.topbar-title { color: white; font-size: 18px; font-weight: 700; }
+.topbar-subtitle { color: rgba(255,255,255,.55); font-size: 13px; margin-top: 2px; }
+.topbar-right { display: flex; gap: 10px; align-items: center; }
+.btn { padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; transition: all .15s; }
+.btn-primary  { background: #6366f1; color: white; }
+.btn-primary:hover  { background: #4f46e5; }
+.btn-success  { background: #10b981; color: white; }
+.btn-success:hover  { background: #059669; }
+.btn-danger   { background: #ef4444; color: white; }
+.btn-danger:hover   { background: #dc2626; }
+.btn-ghost    { background: rgba(255,255,255,.15); color: white; border: 1px solid rgba(255,255,255,.3); }
+.btn-ghost:hover    { background: rgba(255,255,255,.25); }
+.btn-outline  { background: white; color: #6366f1; border: 2px solid #6366f1; }
+.btn-outline:hover  { background: #ede9fe; }
+
+/* ── 主体 ── */
+.main { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+
+/* ── 统计卡片 ── */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: white; border-radius: 14px; padding: 22px 24px; box-shadow: 0 2px 12px rgba(0,0,0,.07); }
+.stat-card .label { font-size: 13px; color: #6b7280; margin-bottom: 8px; }
+.stat-card .value { font-size: 32px; font-weight: 800; color: #1f2937; }
+.stat-card .sub   { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+.stat-card.purple .value { color: #6366f1; }
+.stat-card.green  .value { color: #10b981; }
+.stat-card.orange .value { color: #f59e0b; }
+
+/* ── 标签页 ── */
+.tabs {
+  display: flex; gap: 4px; background: white;
+  border-radius: 12px; padding: 6px; margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.07); width: fit-content;
+}
+.tab { padding: 8px 22px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; color: #6b7280; transition: all .2s; border: none; background: transparent; }
+.tab.active { background: #6366f1; color: white; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── 表格 ── */
+.table-wrap { background: white; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.07); overflow: hidden; }
+.table-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid #f3f4f6; flex-wrap: wrap; gap: 10px; }
+.table-toolbar h3 { font-size: 16px; color: #1f2937; }
+.search-input { padding: 8px 14px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; width: 220px; outline: none; }
+table { width: 100%; border-collapse: collapse; }
+th { background: #f9fafb; padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #6b7280; border-bottom: 1px solid #f3f4f6; }
+td { padding: 14px 16px; font-size: 14px; color: #374151; border-bottom: 1px solid #f9fafb; vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fafafa; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.badge-purple { background: #ede9fe; color: #6366f1; }
+.badge-green  { background: #d1fae5; color: #059669; }
+.btn-detail { padding: 5px 14px; background: #ede9fe; color: #6366f1; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 600; }
+.btn-detail:hover { background: #ddd6fe; }
+
+/* ── 统计图 ── */
+.q-stat-card { background: white; border-radius: 14px; padding: 24px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07); }
+.q-stat-card h4 { font-size: 15px; color: #1f2937; margin-bottom: 16px; border-left: 3px solid #6366f1; padding-left: 12px; }
+.bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.bar-label { width: 120px; font-size: 13px; color: #374151; text-align: right; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { flex: 1; background: #f3f4f6; border-radius: 6px; height: 22px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg,#6366f1,#818cf8); border-radius: 6px; transition: width .6s cubic-bezier(.22,.61,.36,1); min-width: 2px; }
+.bar-count { width: 50px; font-size: 13px; color: #6b7280; }
+.text-answers { display: flex; flex-direction: column; gap: 10px; }
+.text-item { background: #f8f7ff; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: #374151; line-height: 1.6; border-left: 3px solid #a5b4fc; }
+.text-item .meta { font-size: 12px; color: #9ca3af; margin-bottom: 6px; }
+.rating-avg { display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px; }
+.rating-avg .big { font-size: 48px; font-weight: 800; color: #6366f1; }
+.rating-avg .small { font-size: 16px; color: #9ca3af; }
+.rating-avg .label { font-size: 14px; color: #6b7280; margin-left: 4px; }
+
+/* ── 问卷编辑器 ── */
+.editor-wrap { background: white; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.07); overflow: hidden; }
+.editor-header { padding: 20px 28px; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
+.editor-header h3 { font-size: 16px; color: #1f2937; }
+.editor-body { padding: 24px 28px; }
+.form-row { margin-bottom: 18px; }
+.form-row label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+.form-row input[type=text],
+.form-row textarea,
+.form-row select {
+  width: 100%; padding: 10px 14px;
+  border: 2px solid #e5e7eb; border-radius: 10px;
+  font-size: 14px; font-family: inherit; outline: none;
+  transition: border-color .2s;
+}
+.form-row input[type=text]:focus,
+.form-row textarea:focus,
+.form-row select:focus { border-color: #6366f1; }
+.q-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+.q-editor-card {
+  border: 2px solid #e5e7eb; border-radius: 12px; overflow: hidden;
+  transition: border-color .2s;
+}
+.q-editor-card:hover { border-color: #a5b4fc; }
+.q-editor-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; background: #f9fafb; cursor: pointer;
+  user-select: none;
+}
+.q-editor-head .drag-handle { color: #9ca3af; font-size: 18px; cursor: grab; }
+.q-editor-head .q-index { font-size: 12px; font-weight: 700; color: #6366f1; background: #ede9fe; padding: 2px 8px; border-radius: 20px; }
+.q-editor-head .q-preview { flex: 1; font-size: 14px; color: #374151; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.q-editor-head .q-type-badge { font-size: 12px; color: #6b7280; background: #f3f4f6; padding: 3px 10px; border-radius: 20px; }
+.q-editor-head .btn-del { padding: 4px 10px; background: #fef2f2; color: #ef4444; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 600; }
+.q-editor-head .btn-del:hover { background: #fee2e2; }
+.q-editor-body { padding: 16px 20px; border-top: 1px solid #f3f4f6; display: none; }
+.q-editor-card.open .q-editor-body { display: block; }
+.q-editor-card.open .q-editor-head { background: #f5f3ff; }
+.options-editor { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.opt-row { display: flex; gap: 8px; align-items: center; }
+.opt-row input { flex: 1; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 14px; outline: none; }
+.opt-row input:focus { border-color: #6366f1; }
+.btn-del-opt { width: 28px; height: 28px; border: none; background: #fef2f2; color: #ef4444; border-radius: 6px; cursor: pointer; font-size: 16px; flex-shrink: 0; }
+.btn-del-opt:hover { background: #fee2e2; }
+.btn-add-opt { margin-top: 8px; padding: 7px 16px; background: #ede9fe; color: #6366f1; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 600; }
+.btn-add-opt:hover { background: #ddd6fe; }
+.toggle-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.toggle-label { font-size: 13px; color: #374151; }
+input[type=checkbox] { width: 16px; height: 16px; accent-color: #6366f1; }
+.add-q-bar { text-align: center; padding: 8px 0 4px; }
+.add-q-bar .btn-add-q { padding: 10px 28px; background: linear-gradient(135deg,#667eea,#764ba2); color: white; border: none; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(102,126,234,.35); transition: transform .15s; }
+.add-q-bar .btn-add-q:hover { transform: translateY(-2px); }
+.save-tip { background: #d1fae5; border: 1px solid #6ee7b7; color: #065f46; border-radius: 10px; padding: 12px 18px; font-size: 14px; margin-top: 16px; display: none; }
+
+/* ── 详情弹窗 ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 500; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: white; border-radius: 18px; width: 580px; max-width: 95vw; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+.modal-header { padding: 24px 28px 16px; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; }
+.modal-header h3 { font-size: 17px; color: #1f2937; }
+.modal-close { width: 32px; height: 32px; border-radius: 50%; border: none; background: #f3f4f6; cursor: pointer; font-size: 18px; color: #6b7280; display: flex; align-items: center; justify-content: center; }
+.modal-body { padding: 20px 28px 28px; }
+.detail-row { display: flex; gap: 8px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid #f3f4f6; align-items: baseline; }
+.detail-row:last-child { border-bottom: none; }
+.detail-q { font-size: 13px; color: #6b7280; flex-shrink: 0; min-width: 140px; }
+.detail-a { font-size: 15px; color: #1f2937; font-weight: 600; }
+
+/* ── 空状态 ── */
+.empty-state { text-align: center; padding: 64px 32px; color: #9ca3af; }
+.empty-state .icon { font-size: 56px; margin-bottom: 16px; }
+.empty-state h3 { font-size: 18px; margin-bottom: 8px; color: #6b7280; }
+
+@media (max-width:640px) {
+  .topbar { padding: 0 16px; }
+  .main { padding: 16px 12px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  th, td { padding: 10px 12px; }
+  .editor-body { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- 登录遮罩 -->
+<div class="login-overlay" id="login-overlay">
+  <div class="login-box">
+    <div class="icon">🔐</div>
+    <h2>管理员登录</h2>
+    <p>请输入管理密码以进入后台</p>
+    <input type="password" id="pwd-input" placeholder="输入密码" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-login" onclick="doLogin()">进入后台</button>
+    <div class="login-error" id="login-error">密码错误，请重试</div>
+  </div>
+</div>
+
+<!-- 顶栏 -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">📊</div>
+    <div>
+      <div class="topbar-title">问卷管理后台</div>
+      <div class="topbar-subtitle" id="tb-subtitle">加载中...</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn btn-ghost" onclick="exportCSV()">📥 导出 CSV</button>
+    <button class="btn btn-primary" onclick="window.open('index.html','_blank')">📋 查看问卷</button>
+    <button class="btn btn-danger" onclick="clearData()">🗑 清除数据</button>
+  </div>
+</div>
+
+<!-- 主内容 -->
+<div class="main">
+
+  <!-- 统计卡片 -->
+  <div class="stats-grid">
+    <div class="stat-card purple">
+      <div class="label">📥 总提交数</div>
+      <div class="value" id="stat-total">0</div>
+      <div class="sub">累计问卷回收数量</div>
+    </div>
+    <div class="stat-card green">
+      <div class="label">👥 参与人数</div>
+      <div class="value" id="stat-people">0</div>
+      <div class="sub">唯一填写人数</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="label">🕐 最近提交</div>
+      <div class="value" style="font-size:18px;margin-top:4px;" id="stat-last">—</div>
+      <div class="sub">最近一次回复时间</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">🏢 部门覆盖</div>
+      <div class="value" id="stat-dept">0</div>
+      <div class="sub">已参与部门数</div>
+    </div>
+  </div>
+
+  <!-- 标签页 -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('responses',this)">📋 回复明细</button>
+    <button class="tab" onclick="switchTab('analytics',this)">📊 答题统计</button>
+    <button class="tab" onclick="switchTab('editor',this)">✏️ 编辑问卷</button>
+  </div>
+
+  <!-- 回复明细 -->
+  <div id="panel-responses" class="panel active">
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <h3>所有回复 <span id="resp-count" style="color:#6b7280;font-weight:normal;font-size:14px;"></span></h3>
+        <input class="search-input" type="text" placeholder="🔍 搜索姓名 / 部门..." oninput="filterTable(this.value)">
+      </div>
+      <div style="overflow-x:auto;">
+        <table id="resp-table">
+          <thead><tr><th>#</th><th>姓名</th><th>部门</th><th>提交时间</th><th>操作</th></tr></thead>
+          <tbody id="resp-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 答题统计 -->
+  <div id="panel-analytics" class="panel">
+    <div id="analytics-area"></div>
+  </div>
+
+  <!-- 问卷编辑器 -->
+  <div id="panel-editor" class="panel">
+    <div class="editor-wrap">
+      <div class="editor-header">
+        <h3>✏️ 问卷内容编辑器</h3>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-outline" onclick="previewSurvey()">👁 预览问卷</button>
+          <button class="btn btn-success" onclick="saveConfig()">💾 保存并发布</button>
+        </div>
+      </div>
+      <div class="editor-body">
+
+        <!-- 基本信息 -->
+        <div style="background:#f8f7ff;border-radius:12px;padding:20px;margin-bottom:24px;">
+          <div style="font-size:14px;font-weight:700;color:#6366f1;margin-bottom:14px;">📝 基本信息</div>
+          <div class="form-row">
+            <label>问卷标题</label>
+            <input type="text" id="cfg-title" placeholder="如：2026年度员工满意度调查">
+          </div>
+          <div class="form-row" style="margin-bottom:0;">
+            <label>问卷说明</label>
+            <input type="text" id="cfg-desc" placeholder="填写说明文字，显示在问卷顶部">
+          </div>
+        </div>
+
+        <!-- 题目列表 -->
+        <div style="font-size:14px;font-weight:700;color:#374151;margin-bottom:12px;">📋 题目列表</div>
+        <div class="q-list" id="q-list"></div>
+
+        <!-- 添加题目 -->
+        <div class="add-q-bar">
+          <button class="btn-add-q" onclick="addQuestion()">＋ 添加新题目</button>
+        </div>
+
+        <div class="save-tip" id="save-tip">✅ 问卷已保存！同事打开填写页即可看到最新内容。</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 详情弹窗 -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">答题详情</h3>
+      <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('show')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  🔑 管理密码
+// ============================================================
+const ADMIN_PASSWORD = "my0309";
+
+// ============================================================
+//  默认问卷配置（首次使用时载入）
+// ============================================================
+const DEFAULT_CONFIG = {
+  title: "关系健康度与魅力评估问卷",
+  description: "本问卷分为三个部分，帮助你全面评估自己的魅力、关系健康度和对方的投入度。请根据实际情况诚实作答。",
+  questions: [
+    // ========== 第一部分：你的魅力基石（1-5题） ==========
+    {
+      id: "part1_intro", type: "radio", required: false,
+      title: "第一部分：你的魅力基石（1-5题）",
+      description: ["这部分帮助你看见，在关系中你是否依然保持着自己最吸引人的光芒。"],
+      options: []
+    },
+    {
+      id: "q1", type: "radio", required: true,
+      title: "1. 当你独自一人时，你内心最常浮现的感受是？",
+      description: [],
+      options: ["A. 平静而充实，有很多自己想做的事", "B. 有点无聊，但能安排自己", "C. 隐隐不安，总想联系他或等待他的消息", "D. 空虚、焦虑，觉得生活没有他就没有意义"]
+    },
+    {
+      id: "q2", type: "radio", required: true,
+      title: "2. 关于自己的事业/爱好/成长，你的态度是？",
+      description: [],
+      options: ["A. 我有清晰的目标，并且正在为之努力，这让我很有成就感", "B. 我有一些爱好，但常因感情而搁置", "C. 我大部分精力都放在'我们'的关系上，自己的事搁置了", "D. 我几乎没有自己的社交圈和爱好，他是我的全部"]
+    },
+    {
+      id: "q3", type: "radio", required: true,
+      title: "3. 当你和伴侣发生分歧时，你最惯常的反应是？",
+      description: [],
+      options: ["A. 冷静表达自己的感受和需求，寻求共同解决", "B. 为了避免冲突，先妥协，但内心委屈", "C. 情绪激动，用指责或冷战的方式试图让他'懂'我", "D. 极度恐慌，害怕失去，立刻道歉或放弃自己的立场"]
+    },
+    {
+      id: "q4", type: "radio", required: true,
+      title: "4. 照镜子时，你对自己外在形象的评价是？",
+      description: [],
+      options: ["A. 我很欣赏自己，打扮更多是为了取悦自己", "B. 基本满意，但会因为他的一句评价而焦虑", "C. 感觉不如以前了，没什么心思打理自己", "D. 很自卑，觉得自己不够好，配不上他"]
+    },
+    {
+      id: "q5", type: "radio", required: true,
+      title: "5. 对于'如果分手，我的人生会如何'这个念头，你的第一反应是？",
+      description: [],
+      options: ["A. 会很痛苦，但我相信我最终能走出来，并过得更好", "B. 不敢想，我觉得离开他我可能再也找不到更好的了", "C. 天会塌下来，我完全无法想象一个人怎么活", "D. 我从未想过这个可能，我们的关系坚不可摧"]
+    },
+    // ========== 第二部分：你们的关系健康度（6-12题） ==========
+    {
+      id: "part2_intro", type: "radio", required: false,
+      title: "第二部分：你们的关系健康度（6-12题）",
+      description: ["这部分评估你们互动的模式、沟通的质量和关系的根基。"],
+      options: []
+    },
+    {
+      id: "q6", type: "radio", required: true,
+      title: "6. 你们日常沟通中，关于'感受'的对话占比是多少？",
+      description: [],
+      options: ["A. 经常分享彼此的喜怒哀乐，他会认真听，我也会", "B. 主要聊日常琐事或安排，很少深入谈感受", "C. 我单方面想聊感受，他常回避或敷衍", "D. 几乎不沟通感受，一谈就容易吵架"]
+    },
+    {
+      id: "q7", type: "radio", required: true,
+      title: "7. 当你在工作中/生活中受了委屈，向他倾诉时，他的典型反应是？",
+      description: [],
+      options: ["A. 放下手头的事，专注倾听，先共情，再问你需要什么帮助", "B. 简单安慰几句'别想太多'，然后转移话题", "C. 直接给你讲道理，分析你的不对，让你感觉更糟", "D. 表现出不耐烦，觉得你小题大做"]
+    },
+    {
+      id: "q8", type: "radio", required: true,
+      title: "8. 你们发生争吵后，通常会如何解决？",
+      description: [],
+      options: ["A. 冷静后，双方会主动沟通，一起复盘，关系更紧密", "B. 冷战一段时间，然后不了了之，假装没发生过", "C. 总是我先低头去哄他、道歉，才能和好", "D. 矛盾越积越多，从未真正解决，经常翻旧账"]
+    },
+    {
+      id: "q9", type: "radio", required: true,
+      title: "9. 在重要的节日、纪念日或你遇到困难时，他给你的'惊喜'或'支持'是？",
+      description: [],
+      options: ["A. 总能记在心里，用我意想不到或我喜欢的方式表达", "B. 需要我提醒，但提醒后会做", "C. 口头承诺多，实际行动少，经常'画饼'", "D. 完全忽略，并觉得这些形式主义很麻烦"]
+    },
+    {
+      id: "q10", type: "radio", required: true,
+      title: "10. 关于未来（如定居、职业、家庭等），你们聊得如何？",
+      description: [],
+      options: ["A. 我们经常畅想未来，并且目标一致，在共同规划", "B. 聊过，但比较模糊，没有具体计划", "C. 我聊时他回避，或说'现在这样挺好，别想那么远'", "D. 从未聊过，感觉我们的未来没有交集"]
+    },
+    {
+      id: "q11", type: "radio", required: true,
+      title: "11. 当你需要他为你做出一些牺牲或改变（比如换个工作、改掉某个习惯）时，他会？",
+      description: [],
+      options: ["A. 认真考虑，并愿意为了我们的关系做出努力和调整", "B. 嘴上答应，但行动上没变化", "C. 直接拒绝，并指责你'要求太多'、'不够独立'", "D. 表面答应，背后却因此疏远或抱怨你"]
+    },
+    {
+      id: "q12", type: "radio", required: true,
+      title: "12. 在你们的亲密关系中（指情感和身体），你感到的'安全感和满足感'是？",
+      description: [],
+      options: ["A. 非常安全且满足，我们彼此信任，连接紧密", "B. 大部分时候稳定，但偶尔会感到疏离或不确定", "C. 经常感到焦虑，担心他不够爱我，或身体接触上他比较被动", "D. 几乎没有亲密感，感觉像室友，或亲密后我更空虚"]
+    },
+    // ========== 第三部分：他的投入与爱意（13-20题） ==========
+    {
+      id: "part3_intro", type: "radio", required: false,
+      title: "第三部分：他的投入与爱意（13-20题）",
+      description: ["这部分是衡量'他爱你有多少'的核心指标，注意观察他的行为。"],
+      options: []
+    },
+    {
+      id: "q13", type: "radio", required: true,
+      title: "13. 他的时间分配里，留给'你们俩'的专属时间是？",
+      description: [],
+      options: ["A. 他会主动规划并预留高质量的时间给我，雷打不动", "B. 有空就会找我，但常常被工作或朋友打断", "C. 都是我主动约他，他抽空'配合'我", "D. 他总是很'忙'，我们很少有机会单独相处"]
+    },
+    {
+      id: "q14", type: "radio", required: true,
+      title: "14. 他了解你的'喜恶'吗？比如你最爱的花、讨厌的食物、你过去的经历？",
+      description: [],
+      options: ["A. 他记得很清楚，并体现在日常细节中", "B. 记得大概，但偶尔会搞错", "C. 我反复说过，但他好像从来记不住", "D. 他从不关心这些，觉得不重要"]
+    },
+    {
+      id: "q15", type: "radio", required: true,
+      title: "15. 在他的社交媒体、朋友或家人面前，你的'存在感'如何？",
+      description: [],
+      options: ["A. 他大方公开我们的关系，带我进入他的社交圈，并引以为傲", "B. 知道他有对象，但很少带我参与他的核心社交", "C. 他的朋友/家人甚至不知道我的存在", "D. 他刻意回避在熟人面前提及我"]
+    },
+    {
+      id: "q16", type: "radio", required: true,
+      title: "16. 当你提出'我感觉你最近有点冷落我'时，他的反应是？",
+      description: [],
+      options: ["A. 立刻道歉，解释原因，并询问我的感受，随后有所行动", "B. 说'没有啊，你想多了'，然后继续之前的状态", "C. 觉得我在'作'，引发一场争吵", "D. 完全无视，或冷暴力回应"]
+    },
+    {
+      id: "q17", type: "radio", required: true,
+      title: "17. 他为你花钱或在你身上投入资源的态度是？",
+      description: [],
+      options: ["A. 在自己能力范围内，非常乐意且主动为你付出，不求回报", "B. 你需要时会给你，但会精打细算，有时让你觉得'不值'", "C. 计较花费，希望你也能同等或更多地付出", "D. 非常吝啬，很少为你付出，常哭穷"]
+    },
+    {
+      id: "q18", type: "radio", required: true,
+      title: "18. 他的手机/私人空间，对你的开放程度是？",
+      description: [],
+      options: ["A. 不刻意设防，你需要用时很自然，彼此信任", "B. 不主动给你看，但你要求时会给，会有些紧张", "C. 非常在意隐私，手机从不离身，密码保密", "D. 你发现过一些让你不安的内容，或曾删除记录"]
+    },
+    {
+      id: "q19", type: "radio", required: true,
+      title: "19. 在你遇到重大挫折（如失业、生病、家庭变故）时，他的行为是？",
+      description: [],
+      options: ["A. 坚定地站在你身边，成为你的后盾，共渡难关", "B. 口头安慰，但实际能做的有限，有点想'回避'", "C. 开始挑剔你，抱怨你给他带来麻烦", "D. 迅速疏远，甚至消失"]
+    },
+    {
+      id: "q20", type: "radio", required: true,
+      title: "20. 综合来看，你觉得他对这段关系的'长远规划'是？",
+      description: [],
+      options: ["A. 我能明确感受到，他正一步步把我规划进他的未来", "B. 他嘴上说想长久，但行为上还在观望", "C. 他享受当下，从不谈论以后", "D. 我感觉他只是把我当作过渡或备选"]
+    }
+  ]
+};
+
+let allResponses = [];
+let surveyConfig = null;
+
+// ── 登录 ──────────────────────────────────────────────
+function doLogin() {
+  if (document.getElementById("pwd-input").value === ADMIN_PASSWORD) {
+    document.getElementById("login-overlay").style.display = "none";
+    loadAll();
+  } else {
+    const e = document.getElementById("login-error");
+    e.style.display = "block";
+    setTimeout(() => e.style.display = "none", 3000);
+    document.getElementById("pwd-input").value = "";
+    document.getElementById("pwd-input").focus();
+  }
+}
+document.getElementById("pwd-input").focus();
+
+// ── 加载全部数据 ──────────────────────────────────────
+function loadAll() {
+  allResponses = JSON.parse(localStorage.getItem("survey_responses") || "[]");
+  const saved = localStorage.getItem("survey_config");
+  surveyConfig = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+  // 确保始终有配置存储
+  if (!saved) localStorage.setItem("survey_config", JSON.stringify(surveyConfig));
+
+  document.getElementById("tb-subtitle").textContent = surveyConfig.title;
+  updateStats();
+  renderTable(allResponses);
+  renderAnalytics();
+  renderEditor();
+}
+
+// ── 统计 ──────────────────────────────────────────────
+function updateStats() {
+  document.getElementById("stat-total").textContent = allResponses.length;
+  document.getElementById("stat-people").textContent = new Set(allResponses.map(r=>r.name)).size;
+  document.getElementById("stat-dept").textContent = new Set(allResponses.map(r=>r.dept).filter(d=>d&&d!=="未填写")).size;
+  document.getElementById("resp-count").textContent = `（共 ${allResponses.length} 条）`;
+  if (allResponses.length > 0) {
+    const last = allResponses[allResponses.length-1];
+    document.getElementById("stat-last").textContent = last.submitTime.split(" ")[1] || last.submitTime;
+  }
+}
+
+// ── 回复表格 ──────────────────────────────────────────
+function renderTable(data) {
+  const tbody = document.getElementById("resp-tbody");
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="icon">📭</div><h3>暂无数据</h3><p>还没有同事提交问卷，快分享链接吧～</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map((r,i) => `
+    <tr>
+      <td><span class="badge badge-purple">${i+1}</span></td>
+      <td><strong>${r.name}</strong></td>
+      <td><span class="badge badge-green">${r.dept}</span></td>
+      <td style="color:#6b7280;">${r.submitTime}</td>
+      <td><button class="btn-detail" onclick="showDetail(${r.id})">查看详情</button></td>
+    </tr>`).join("");
+}
+function filterTable(kw) {
+  const k = kw.toLowerCase();
+  renderTable(allResponses.filter(r => r.name.toLowerCase().includes(k) || r.dept.toLowerCase().includes(k)));
+}
+
+// ── 答题统计 ──────────────────────────────────────────
+function renderAnalytics() {
+  const area = document.getElementById("analytics-area");
+  if (!surveyConfig || !allResponses.length) {
+    area.innerHTML = `<div class="empty-state"><div class="icon">📊</div><h3>暂无统计数据</h3><p>等待同事提交后自动生成图表</p></div>`;
+    return;
+  }
+  area.innerHTML = "";
+  surveyConfig.questions.forEach(q => {
+    const card = document.createElement("div"); card.className = "q-stat-card";
+    const allAns = allResponses.map(r=>r.answers[q.id]).filter(a=>a!==null&&a!==undefined);
+    let html = `<h4>${q.title} <span style="font-weight:normal;color:#9ca3af;font-size:13px;">（${allAns.length} 人作答）</span></h4>
+      ${(q.description ? (Array.isArray(q.description) ? q.description : [q.description]) : []).filter(desc => desc && desc.trim()).map(desc => `<p style="font-size:13px;color:#6b7280;margin:-8px 0 14px;padding:8px 12px;background:#f9fafb;border-radius:8px;border-left:3px solid #c4b5fd;">${desc}</p>`).join("")}`;
+
+    if (q.type==="radio"||q.type==="checkbox") {
+      const counts = {}; (q.options||[]).forEach(o=>counts[o]=0);
+      allAns.forEach(a => { if(Array.isArray(a)) a.forEach(v=>{if(counts[v]!==undefined)counts[v]++;}); else if(counts[a]!==undefined) counts[a]++; });
+      const max = Math.max(...Object.values(counts),1);
+      html += (q.options||[]).map(o=>`
+        <div class="bar-row">
+          <div class="bar-label" title="${o}">${o}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${(counts[o]/max*100).toFixed(1)}%"></div></div>
+          <div class="bar-count">${counts[o]} 票</div>
+        </div>`).join("");
+    } else if (q.type==="rating") {
+      const valid = allAns.filter(a=>typeof a==="number");
+      const avg = valid.length ? (valid.reduce((s,v)=>s+v,0)/valid.length).toFixed(1) : "—";
+      const counts = {}; for(let i=q.min;i<=q.max;i++) counts[i]=0;
+      valid.forEach(v=>{if(counts[v]!==undefined)counts[v]++;});
+      const max = Math.max(...Object.values(counts),1);
+      html += `<div class="rating-avg"><div class="big">${avg}</div><div class="small">/ ${q.max}</div><div class="label">平均分</div></div>`;
+      html += Object.keys(counts).map(s=>`
+        <div class="bar-row">
+          <div class="bar-label">${s} 分</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${(counts[s]/max*100).toFixed(1)}%"></div></div>
+          <div class="bar-count">${counts[s]} 人</div>
+        </div>`).join("");
+    } else if (q.type==="textarea") {
+      const items = allAns.filter(a=>a&&a.trim()).map(a=>{
+        const r = allResponses.find(r=>r.answers[q.id]===a);
+        return `<div class="text-item"><div class="meta">${r?r.name+' · '+r.submitTime:''}</div>${a}</div>`;
+      }).join("") || `<p style="color:#9ca3af;font-size:14px;">暂无文字回复</p>`;
+      html += `<div class="text-answers">${items}</div>`;
+    }
+    card.innerHTML = html;
+    area.appendChild(card);
+  });
+}
+
+// ── 问卷编辑器 ────────────────────────────────────────
+function renderEditor() {
+  document.getElementById("cfg-title").value = surveyConfig.title || "";
+  document.getElementById("cfg-desc").value  = surveyConfig.description || "";
+  renderQList();
+}
+
+function renderQList() {
+  const list = document.getElementById("q-list");
+  list.innerHTML = "";
+  (surveyConfig.questions || []).forEach((q, idx) => {
+    list.appendChild(buildQCard(q, idx));
+  });
+}
+
+function buildQCard(q, idx) {
+  const typeLabels = { radio:"单选", checkbox:"多选", rating:"评分", textarea:"文字" };
+  const card = document.createElement("div");
+  card.className = "q-editor-card";
+  card.dataset.id = q.id;
+
+  // 头部
+  const head = document.createElement("div");
+  head.className = "q-editor-head";
+  head.innerHTML = `
+    <span class="drag-handle">☰</span>
+    <span class="q-index">Q${idx+1}</span>
+    <span class="q-preview">${q.title || "（未填写题目）"}</span>
+    <span class="q-type-badge">${typeLabels[q.type]||q.type}</span>
+    <button class="btn-del" onclick="deleteQuestion('${q.id}',event)">删除</button>
+  `;
+  head.addEventListener("click", (e) => {
+    if (e.target.classList.contains("btn-del")) return;
+    card.classList.toggle("open");
+  });
+
+  // 主体
+  const body = document.createElement("div");
+  body.className = "q-editor-body";
+
+  let optHtml = "";
+  if (q.type === "radio" || q.type === "checkbox") {
+    optHtml = `
+      <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">选项内容：</div>
+      <div class="options-editor" id="opts-${q.id}">
+        ${(q.options||[]).map((o,oi)=>`
+          <div class="opt-row">
+            <input type="text" value="${escHtml(o)}" placeholder="选项 ${oi+1}" onchange="updateOption('${q.id}',${oi},this.value)">
+            <button class="btn-del-opt" onclick="deleteOption('${q.id}',${oi})" title="删除此选项">×</button>
+          </div>`).join("")}
+      </div>
+      <button class="btn-add-opt" onclick="addOption('${q.id}')">＋ 添加选项</button>`;
+  } else if (q.type === "rating") {
+    optHtml = `
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+        <label style="font-size:13px;">最小值：<input type="number" min="0" max="5" value="${q.min||1}" style="width:60px;padding:4px 8px;border:1px solid #e5e7eb;border-radius:6px;" onchange="updateQProp('${q.id}','min',+this.value)"></label>
+        <label style="font-size:13px;">最大值：<input type="number" min="2" max="20" value="${q.max||10}" style="width:60px;padding:4px 8px;border:1px solid #e5e7eb;border-radius:6px;" onchange="updateQProp('${q.id}','max',+this.value)"></label>
+      </div>`;
+  } else if (q.type === "textarea") {
+    optHtml = `
+      <label style="font-size:13px;font-weight:600;color:#374151;">提示文字：</label>
+      <input type="text" value="${escHtml(q.placeholder||'')}" placeholder="输入框内的提示语" style="margin-top:6px;" onchange="updateQProp('${q.id}','placeholder',this.value)">`;
+  }
+
+  body.innerHTML = `
+    <div class="form-row">
+      <label>题目类型</label>
+      <select onchange="changeQType('${q.id}',this.value)">
+        <option value="radio"    ${q.type==="radio"    ?"selected":""}>单选题</option>
+        <option value="checkbox" ${q.type==="checkbox" ?"selected":""}>多选题</option>
+        <option value="rating"   ${q.type==="rating"   ?"selected":""}>评分题（数字）</option>
+        <option value="textarea" ${q.type==="textarea" ?"selected":""}>文字填写</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>题目内容</label>
+      <input type="text" value="${escHtml(q.title||'')}" placeholder="请输入题目内容" onchange="updateQProp('${q.id}','title',this.value); this.closest('.q-editor-card').querySelector('.q-preview').textContent=this.value||'（未填写题目）'">
+    </div>
+    <div class="form-row">
+      <label>题目说明 <span style="color:#9ca3af;font-weight:400;">（选填，可添加多条，显示在标题下方）</span></label>
+      <div class="desc-list" id="desc-list-${q.id}" style="margin-top: 8px;">
+        ${(Array.isArray(q.description) ? q.description : (q.description ? [q.description] : [])).map((desc, idx) => `
+          <div class="desc-item" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+            <input type="text" value="${escHtml(desc)}" placeholder="说明项内容" style="flex:1; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px;" onchange="updateDesc('${q.id}', ${idx}, this.value)">
+            <button class="btn" type="button" style="padding: 6px 12px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer;" onclick="removeDesc('${q.id}', ${idx})">×</button>
+          </div>`).join('')}
+      </div>
+      <button type="button" class="btn" style="margin-top: 8px; padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;" onclick="addDesc('${q.id}')">＋ 添加说明项</button>
+    </div>
+    <div id="opt-area-${q.id}">${optHtml}</div>
+    <div class="toggle-row">
+      <input type="checkbox" id="req-${q.id}" ${q.required?"checked":""} onchange="updateQProp('${q.id}','required',this.checked)">
+      <label for="req-${q.id}" class="toggle-label">必填项</label>
+    </div>`;
+
+  card.appendChild(head);
+  card.appendChild(body);
+  return card;
+}
+
+function addQuestion() {
+  const newQ = {
+    id: "q" + Date.now(),
+    type: "radio",
+    title: "",
+    description: [],
+    required: false,
+    options: ["选项A", "选项B"]
+  };
+  surveyConfig.questions.push(newQ);
+  renderQList();
+  // 展开新卡片
+  setTimeout(() => {
+    const cards = document.querySelectorAll(".q-editor-card");
+    if (cards.length) { cards[cards.length-1].classList.add("open"); cards[cards.length-1].scrollIntoView({behavior:"smooth",block:"center"}); }
+  }, 100);
+}
+
+function deleteQuestion(id, e) {
+  e.stopPropagation();
+  if (!confirm("确定删除这道题吗？")) return;
+  surveyConfig.questions = surveyConfig.questions.filter(q => q.id !== id);
+  renderQList();
+}
+
+function updateQProp(id, prop, val) {
+  const q = surveyConfig.questions.find(q => q.id === id);
+  if (q) q[prop] = val;
+}
+
+// 添加说明项
+function addDesc(id) {
+  const q = surveyConfig.questions.find(q => q.id === id);
+  if (!q) return;
+  if (!q.description) q.description = [];
+  if (!Array.isArray(q.description)) q.description = [q.description];
+  q.description.push("");
+  renderQList();
+  // 展开对应卡片
+  const card = document.querySelector(`.q-editor-card[data-id="${id}"]`);
+  if (card) {
+    const header = card.querySelector(".q-editor-header");
+    if (header && header.getAttribute("aria-expanded") !== "true") {
+      header.click();
+    }
+  }
+}
+
+// 更新说明项
+function updateDesc(id, idx, val) {
+  const q = surveyConfig.questions.find(q => q.id === id);
+  if (!q || !q.description || !Array.isArray(q.description)) return;
+  if (idx >= 0 && idx < q.description.length) q.description[idx] = val;
+}
+
+// 删除说明项
+function removeDesc(id, idx) {
+  const q = surveyConfig.questions.find(q => q.id === id);
+  if (!q || !q.description || !Array.isArray(q.description)) return;
+  if (idx >= 0 && idx < q.description.length) {
+    q.description.splice(idx, 1);
+    if (q.description.length === 0) delete q.description;
+  }
+  renderQList();
+  // 展开对应卡片
+  const card = document.querySelector(`.q-editor-card[data-id="${id}"]`);
+  if (card) {
+    const header = card.querySelector(".q-editor-header");
+    if (header && header.getAttribute("aria-expanded") !== "true") {
+      header.click();
+    }
+  }
+}
+
+function changeQType(id, type) {
+  const q = surveyConfig.questions.find(q => q.id === id);
+  if (!q) return;
+  q.type = type;
+  if (type === "radio" || type === "checkbox") { if (!q.options || !q.options.length) q.options = ["选项A","选项B"]; }
+  if (type === "rating") { q.min = q.min||1; q.max = q.max||10; }
+  if (type === "textarea") { q.placeholder = q.placeholder||"请输入..."; }
+  // 重建 opt-area
+  const area = document.getElementById("opt-area-"+id);
+  if (!area) return;
+  const tempCard = buildQCard(q, surveyConfig.questions.indexOf(q));
+  const newArea = tempCard.querySelector("#opt-area-"+id);
+  if (newArea) area.innerHTML = newArea.innerHTML;
+}
+
+function updateOption(qid, oi, val) {
+  const q = surveyConfig.questions.find(q => q.id === qid);
+  if (q && q.options) q.options[oi] = val;
+}
+
+function addOption(qid) {
+  const q = surveyConfig.questions.find(q => q.id === qid);
+  if (!q) return;
+  q.options = q.options || [];
+  q.options.push("新选项");
+  const container = document.getElementById("opts-"+qid);
+  if (!container) return;
+  const oi = q.options.length - 1;
+  const row = document.createElement("div"); row.className = "opt-row";
+  row.innerHTML = `<input type="text" value="新选项" placeholder="选项 ${oi+1}" onchange="updateOption('${qid}',${oi},this.value)"><button class="btn-del-opt" onclick="deleteOption('${qid}',${oi})" title="删除">×</button>`;
+  container.appendChild(row);
+  row.querySelector("input").focus();
+}
+
+function deleteOption(qid, oi) {
+  const q = surveyConfig.questions.find(q => q.id === qid);
+  if (!q || !q.options || q.options.length <= 1) { alert("至少保留一个选项"); return; }
+  q.options.splice(oi, 1);
+  const container = document.getElementById("opts-"+qid);
+  if (container) {
+    // 重新渲染选项列表
+    container.innerHTML = q.options.map((o,i)=>`
+      <div class="opt-row">
+        <input type="text" value="${escHtml(o)}" placeholder="选项 ${i+1}" onchange="updateOption('${qid}',${i},this.value)">
+        <button class="btn-del-opt" onclick="deleteOption('${qid}',${i})" title="删除">×</button>
+      </div>`).join("");
+  }
+}
+
+function saveConfig() {
+  surveyConfig.title = document.getElementById("cfg-title").value.trim() || "公司内部调查问卷";
+  surveyConfig.description = document.getElementById("cfg-desc").value.trim();
+  localStorage.setItem("survey_config", JSON.stringify(surveyConfig));
+  document.getElementById("tb-subtitle").textContent = surveyConfig.title;
+  const tip = document.getElementById("save-tip");
+  tip.style.display = "block";
+  setTimeout(() => tip.style.display = "none", 3500);
+}
+
+function previewSurvey() {
+  saveConfig();
+  window.open("index.html", "_blank");
+}
+
+// ── 标签页切换 ────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById("panel-"+name).classList.add("active");
+}
+
+// ── 详情弹窗 ──────────────────────────────────────────
+function showDetail(id) {
+  const r = allResponses.find(r=>r.id===id); if(!r) return;
+  document.getElementById("modal-title").textContent = r.name + " 的答题详情";
+  let html = `
+    <div class="detail-row"><div class="detail-q">提交时间</div><div class="detail-a">${r.submitTime}</div></div>
+    <div class="detail-row"><div class="detail-q">遇到的问题</div><div class="detail-a">${r.dept}</div></div>`;
+  if (surveyConfig) {
+    surveyConfig.questions.forEach(q => {
+      const ans = r.answers[q.id];
+      const txt = ans===null||ans===undefined ? '<span style="color:#9ca3af">未作答</span>' :
+                  Array.isArray(ans) ? ans.join("、") : typeof ans==="number" ? ans+" 分" : ans;
+      html += `<div class="detail-row"><div class="detail-q">${q.title}</div><div class="detail-a">${txt}</div></div>`;
+    });
+  }
+  document.getElementById("modal-body").innerHTML = html;
+  document.getElementById("modal-overlay").classList.add("show");
+}
+function closeModal(e) { if(e.target===document.getElementById("modal-overlay")) document.getElementById("modal-overlay").classList.remove("show"); }
+
+// ── 导出 CSV ──────────────────────────────────────────
+function exportCSV() {
+  if (!allResponses.length) { alert("暂无数据可导出"); return; }
+  const headers = ["序号","姓名","部门","提交时间", ...(surveyConfig?.questions||[]).map(q=>q.title)];
+  const rows = allResponses.map((r,i) => {
+    const base = [i+1, r.name, r.dept, r.submitTime];
+    (surveyConfig?.questions||[]).forEach(q => {
+      const a = r.answers[q.id];
+      base.push(a===null||a===undefined?"":Array.isArray(a)?a.join("|"):String(a));
+    });
+    return base.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",");
+  });
+  const csv = "\uFEFF" + headers.map(h=>`"${h}"`).join(",") + "\n" + rows.join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"}));
+  a.download = `问卷数据_${new Date().toLocaleDateString("zh-CN").replace(/\//g,"-")}.csv`;
+  a.click();
+}
+
+// ── 清除数据 ──────────────────────────────────────────
+function clearData() {
+  if (confirm("⚠️ 确定清除所有回复数据？此操作不可恢复！") && confirm("再次确认：将删除所有回复记录，继续？")) {
+    localStorage.removeItem("survey_responses");
+    allResponses = [];
+    updateStats(); renderTable([]); renderAnalytics();
+    alert("数据已清除");
+  }
+}
+
+// ── 工具函数 ──────────────────────────────────────────
+function escHtml(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+// 自动刷新（仅刷新数据，不重渲染编辑器）
+setInterval(() => {
+  if (document.getElementById("login-overlay").style.display === "none") {
+    allResponses = JSON.parse(localStorage.getItem("survey_responses")||"[]");
+    updateStats();
+    renderTable(allResponses);
+    renderAnalytics();
+  }
+}, 10000);
+</script>
+</body>
+</html>

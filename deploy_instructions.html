@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Pages 一键部署指南</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+.container {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+h1 {
+  color: #1f2937;
+  margin-bottom: 24px;
+  font-size: 32px;
+  text-align: center;
+}
+h2 {
+  color: #374151;
+  margin: 32px 0 16px;
+  font-size: 22px;
+}
+h3 {
+  color: #4b5563;
+  margin: 24px 0 12px;
+  font-size: 18px;
+}
+.step-card {
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  border-left: 4px solid #6366f1;
+}
+.step-card.success { border-left-color: #10b981; }
+.step-card.warning { border-left-color: #f59e0b; }
+.step-card.danger { border-left-color: #ef4444; }
+.step-number {
+  display: inline-block;
+  background: #6366f1;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 32px;
+  font-weight: 700;
+  margin-right: 12px;
+}
+.code-block {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 18px;
+  border-radius: 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 15px;
+  margin: 16px 0;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+.code-block .comment { color: #94a3b8; }
+.code-block .keyword { color: #f472b6; }
+.code-block .string { color: #34d399; }
+.code-block .number { color: #fbbf24; }
+.screenshot-guide {
+  background: #f0f9ff;
+  border: 2px solid #bae6fd;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0;
+}
+.screenshot-guide img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 10px 0;
+  border: 1px solid #e5e7eb;
+}
+.btn {
+  display: inline-block;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  color: white;
+  text-decoration: none;
+  padding: 14px 32px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 8px;
+  cursor: pointer;
+  transition: all .2s;
+  border: none;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102,126,234,.3);
+}
+.btn-success { background: #10b981; }
+.btn-warning { background: #f59e0b; }
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 24px 0;
+  gap: 10px;
+}
+.url-display {
+  background: #f3f4f6;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  font-family: monospace;
+  font-size: 16px;
+  word-break: break-all;
+  margin: 16px 0;
+  text-align: center;
+  color: #1f2937;
+}
+.url-display a {
+  color: #6366f1;
+  text-decoration: none;
+}
+.url-display a:hover {
+  text-decoration: underline;
+}
+.important-box {
+  background: #fef2f2;
+  border: 2px solid #fecaca;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0;
+}
+.important-box h3 {
+  color: #dc2626;
+  margin-bottom: 12px;
+}
+.tip-box {
+  background: #ecfdf5;
+  border: 2px solid #a7f3d0;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0;
+}
+.tip-box h3 {
+  color: #065f46;
+  margin-bottom: 12px;
+}
+.checklist {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+}
+.checklist li {
+  margin: 10px 0;
+  padding-left: 30px;
+  position: relative;
+}
+.checklist li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: bold;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🚀 GitHub Pages 一键部署指南</h1>
+  
+  <div class="step-card success">
+    <h2><span class="step-number">1</span> 注册GitHub账号</h2>
+    <p>如果你还没有GitHub账号，需要先注册：</p>
+    <div class="code-block">
+      <span class="comment">// 访问GitHub官网注册</span><br>
+      <a href="https://github.com/signup" target="_blank">https://github.com/signup</a>
+    </div>
+    <p><strong>注册要点</strong>：</p>
+    <ul>
+      <li>用户名建议用英文，如：zhangsan123</li>
+      <li>记住用户名和密码</li>
+      <li>验证邮箱地址</li>
+    </ul>
+  </div>
+  
+  <div class="step-card">
+    <h2><span class="step-number">2</span> 创建新仓库</h2>
+    <p>登录GitHub后，创建新仓库：</p>
+    
+    <div class="screenshot-guide">
+      <h3>仓库设置说明</h3>
+      <p><strong>仓库名称</strong>：建议用英文，如 `relationship-survey`</p>
+      <p><strong>描述</strong>：可填写"关系健康度问卷系统"</p>
+      <p><strong>公开/私有</strong>：选择Public（公开），这样GitHub Pages才能访问</p>
+      <p><strong>初始化选项</strong>：<span style="color: #ef4444; font-weight: bold;">不勾选</span> "Add a README file"</p>
+    </div>
+    
+    <div class="code-block">
+      <span class="comment">// 仓库创建后地址示例</span><br>
+      https://github.com/<span class="string">[你的用户名]</span>/<span class="string">[仓库名]</span>
+    </div>
+  </div>
+  
+  <div class="step-card warning">
+    <h2><span class="step-number">3</span> 上传文件（三种方法）</h2>
+    
+    <h3>方法A：拖拽上传（最简单）</h3>
+    <p>在你的仓库页面：</p>
+    <ol>
+      <li>点击"Add file" → "Upload files"</li>
+      <li>将`survey`文件夹下的所有文件拖拽到上传区域</li>
+      <li>填写提交信息，如："添加问卷系统文件"</li>
+      <li>点击"Commit changes"</li>
+    </ol>
+    
+    <h3>方法B：使用Git命令</h3>
+    <div class="code-block">
+      <span class="comment"># 安装Git，然后在命令行执行：</span><br>
+      git clone https://github.com/<span class="string">[用户名]</span>/<span class="string">[仓库名]</span>.git<br>
+      cd <span class="string">[仓库名]</span><br>
+      <span class="comment"># 复制所有文件到仓库</span><br>
+      cp -r <span class="string">[问卷文件夹路径]</span>/* .<br>
+      git add .<br>
+      git commit -m "添加问卷系统"<br>
+      git push origin main<br>
+    </div>
+    
+    <h3>方法C：使用GitHub Desktop</h3>
+    <p>下载GitHub Desktop客户端，图形化操作更简单。</p>
+  </div>
+  
+  <div class="step-card success">
+    <h2><span class="step-number">4</span> 开启GitHub Pages</h2>
+    
+    <div class="screenshot-guide">
+      <h3>详细步骤：</h3>
+      <ol>
+        <li>进入你的仓库页面</li>
+        <li>点击上方"Settings"（设置）</li>
+        <li>在左侧菜单找到"Pages"（页面）</li>
+        <li>在"Source"（来源）中选择："Deploy from a branch"（从分支部署）</li>
+        <li>在"Branch"（分支）中选择：<strong>main</strong> 分支</li>
+        <li>选择文件夹：<strong>/ (root)</strong></li>
+        <li>点击"Save"（保存）</li>
+      </ol>
+      
+      <p><strong>等待部署</strong>：GitHub会自动构建，大约1-2分钟后会显示绿色部署成功标志。</p>
+    </div>
+    
+    <div class="url-display">
+      <h3>部署成功后访问地址：</h3>
+      <p><strong>https://<span id="username-placeholder">[你的用户名]</span>.github.io/<span id="repo-placeholder">[仓库名]</span>/index.html</strong></p>
+      
+      <p><strong>重要链接</strong>：</p>
+      <ul style="list-style: none; padding: 10px 0;">
+        <li>📋 问卷页面：<a href="#" id="survey-link">https://.../index.html</a></li>
+        <li>⚙️ 管理后台：<a href="#" id="admin-link">https://.../admin.html</a></li>
+        <li>🚀 配置应用：<a href="#" id="config-link">https://.../apply_config.html</a></li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="tip-box">
+    <h3>💡 部署完成后的测试</h3>
+    <ol>
+      <li>用不同设备（手机、电脑）访问问卷地址</li>
+      <li>测试问卷填写和提交功能</li>
+      <li>测试管理员后台登录和查看数据</li>
+      <li>测试移动数据网络访问（应该可以了）</li>
+    </ol>
+  </div>
+  
+  <div class="important-box">
+    <h3>⚠️ 重要注意事项</h3>
+    <p><strong>1. 数据存储限制</strong>：GitHub Pages是静态托管，数据仍然保存在浏览器localStorage中，不同设备数据不互通。</p>
+    <p><strong>2. 安全性</strong>：管理员密码在代码中明文存储，如需更高安全性需要后端支持。</p>
+    <p><strong>3. 更新问卷</strong>：修改问卷后需要重新上传文件到GitHub并等待部署。</p>
+  </div>
+  
+  <div class="checklist">
+    <h3>✅ 部署检查清单</h3>
+    <ul>
+      <li>✅ GitHub账号已注册并登录</li>
+      <li>✅ 创建了公开仓库（Public）</li>
+      <li>✅ 上传了所有问卷文件</li>
+      <li>✅ 开启了GitHub Pages功能</li>
+      <li>✅ 等待部署完成（有绿色标志）</li>
+      <li>✅ 测试公网访问正常</li>
+    </ul>
+  </div>
+  
+  <div class="btn-group">
+    <button class="btn" onclick="window.open('https://github.com/signup', '_blank')">📝 注册GitHub</button>
+    <button class="btn btn-success" onclick="window.open('https://github.com/new', '_blank')">➕ 创建仓库</button>
+    <button class="btn btn-warning" onclick="window.open('https://pages.github.com/', '_blank')">📚 官方教程</button>
+    <button class="btn" onclick="window.open('http://localhost:8899/', '_blank')">🏠 测试本地</button>
+  </div>
+</div>
+
+<script>
+// 自动填充示例URL
+function updateExampleURLs() {
+  const username = 'yourusername';
+  const repo = 'survey-system';
+  
+  // 更新占位符
+  document.getElementById('username-placeholder').textContent = username;
+  document.getElementById('repo-placeholder').textContent = repo;
+  
+  // 更新链接
+  const baseUrl = `https://${username}.github.io/${repo}`;
+  document.getElementById('survey-link').href = `${baseUrl}/index.html`;
+  document.getElementById('admin-link').href = `${baseUrl}/admin.html`;
+  document.getElementById('config-link').href = `${baseUrl}/apply_config.html`;
+  
+  document.getElementById('survey-link').textContent = `${baseUrl}/index.html`;
+  document.getElementById('admin-link').textContent = `${baseUrl}/admin.html`;
+  document.getElementById('config-link').textContent = `${baseUrl}/apply_config.html`;
+}
+
+// 页面加载时更新
+window.addEventListener('DOMContentLoaded', updateExampleURLs);
+
+// 复制部署地址功能
+function copyDeploymentURL() {
+  const url = 'https://yourusername.github.io/survey-system/index.html';
+  navigator.clipboard.writeText(url).then(() => {
+    alert('✅ 部署地址已复制到剪贴板！');
+  });
+}
+</script>
+</body>
+</html>

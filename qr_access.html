@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问卷访问指南</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.container {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  text-align: center;
+}
+h1 {
+  color: #1f2937;
+  margin-bottom: 16px;
+  font-size: 28px;
+}
+h2 {
+  color: #374151;
+  margin: 32px 0 16px;
+  font-size: 20px;
+  text-align: left;
+}
+p {
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  text-align: left;
+}
+.qr-section {
+  margin: 32px 0;
+  padding: 24px;
+  background: #f9fafb;
+  border-radius: 16px;
+}
+.qr-code {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 20px;
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.1);
+}
+.url-box {
+  background: #f3f4f6;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px;
+  font-family: monospace;
+  font-size: 16px;
+  word-break: break-all;
+  margin: 20px 0;
+  text-align: center;
+  color: #1f2937;
+}
+.instructions {
+  background: #f0f9ff;
+  border-left: 4px solid #0ea5e9;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 24px 0;
+  text-align: left;
+}
+.instructions ol {
+  padding-left: 20px;
+  margin: 12px 0;
+}
+.instructions li {
+  margin-bottom: 10px;
+  color: #374151;
+}
+.important {
+  background: #fef2f2;
+  border-left: 4px solid #ef4444;
+  padding: 16px;
+  border-radius: 12px;
+  margin: 24px 0;
+  text-align: left;
+}
+.important h3 {
+  color: #dc2626;
+  margin-bottom: 8px;
+}
+.btn {
+  display: inline-block;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  color: white;
+  text-decoration: none;
+  padding: 14px 32px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 10px;
+  cursor: pointer;
+  transition: all .2s;
+  border: none;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102,126,234,.3);
+}
+.btn-secondary {
+  background: #10b981;
+}
+.network-info {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 24px;
+}
+.network-card {
+  flex: 1;
+  min-width: 200px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+}
+.network-card h3 {
+  color: #374151;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+.network-card ul {
+  padding-left: 20px;
+  color: #6b7280;
+}
+.network-card li {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📱 问卷访问指南</h1>
+  <p>请根据您的网络环境选择合适的访问方式：</p>
+  
+  <div class="network-info">
+    <div class="network-card">
+      <h3>✅ 同一Wi-Fi网络</h3>
+      <ul>
+        <li>连接与问卷服务器相同的Wi-Fi</li>
+        <li>直接访问局域网地址</li>
+        <li>速度最快，最稳定</li>
+        <li>无流量限制</li>
+      </ul>
+      <div class="url-box">http://192.168.1.152:8899/</div>
+      <button class="btn" onclick="window.open('http://192.168.1.152:8899/', '_blank')">立即访问</button>
+    </div>
+    
+    <div class="network-card">
+      <h3>⚠️ 移动数据/其他网络</h3>
+      <ul>
+        <li>使用手机流量</li>
+        <li>在不同Wi-Fi下</li>
+        <li>需要端口转发或工具</li>
+        <li>建议切换到同一Wi-Fi</li>
+      </ul>
+      <div class="important">
+        <h3>重要提示</h3>
+        <p>移动数据无法直接访问局域网IP。请让同事连接同一Wi-Fi网络。</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="instructions">
+    <h2>📝 如何解决移动数据访问问题？</h2>
+    <ol>
+      <li><strong>最佳方案</strong>：让所有同事连接<strong>同一个Wi-Fi网络</strong></li>
+      <li><strong>备用方案</strong>：如果必须使用移动数据，需要：
+        <ul style="margin-top: 8px; padding-left: 20px;">
+          <li>登录路由器设置端口转发（8899端口）</li>
+          <li>获取公网IP地址</li>
+          <li>用公网IP访问：http://[公网IP]:8899/</li>
+        </ul>
+      </li>
+      <li><strong>临时方案</strong>：使用内网穿透工具（如ngrok、frp）</li>
+    </ol>
+  </div>
+  
+  <div class="qr-section">
+    <h2>📲 扫码快速访问（同一Wi-Fi）</h2>
+    <p>使用手机扫码，确保手机连接<b>同一Wi-Fi网络</b>：</p>
+    
+    <div class="qr-code" id="qrCode">
+      <!-- QR码将通过JavaScript生成 -->
+      <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6b7280;">
+        正在生成二维码...
+      </div>
+    </div>
+    
+    <div class="url-box" id="urlDisplay">http://192.168.1.152:8899/</div>
+    
+    <button class="btn btn-secondary" onclick="copyUrl()">📋 复制链接</button>
+    <button class="btn" onclick="window.open('http://192.168.1.152:8899/', '_blank')">🌐 打开问卷</button>
+  </div>
+  
+  <div style="margin-top: 32px; color: #6b7280; font-size: 14px;">
+    <p><strong>服务器状态</strong>：✅ 运行中 (192.168.1.152:8899)</p>
+    <p><strong>问题反馈</strong>：如果无法访问，请确认所有设备在同一Wi-Fi网络下</p>
+  </div>
+</div>
+
+<script>
+// 生成二维码
+function generateQRCode() {
+  const url = "http://192.168.1.152:8899/";
+  const qrContainer = document.getElementById('qrCode');
+  
+  // 使用第三方QR码API（Google Charts）
+  const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${encodeURIComponent(url)}&choe=UTF-8`;
+  
+  qrContainer.innerHTML = `<img src="${qrUrl}" alt="问卷二维码" style="width:100%; height:100%; border-radius:8px;">`;
+}
+
+// 复制链接到剪贴板
+function copyUrl() {
+  const url = "http://192.168.1.152:8899/";
+  navigator.clipboard.writeText(url).then(() => {
+    alert('✅ 链接已复制到剪贴板！');
+  }).catch(err => {
+    console.error('复制失败:', err);
+    alert('❌ 复制失败，请手动复制链接');
+  });
+}
+
+// 页面加载时生成二维码
+window.addEventListener('DOMContentLoaded', generateQRCode);
+</script>
+</body>
+</html>

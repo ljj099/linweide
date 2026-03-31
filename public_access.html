@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>公网访问解决方案</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.container {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 700px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+h1 {
+  color: #1f2937;
+  margin-bottom: 24px;
+  font-size: 28px;
+  text-align: center;
+}
+.solution-card {
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  border-left: 4px solid #6366f1;
+}
+.solution-card.success {
+  border-left-color: #10b981;
+}
+.solution-card.warning {
+  border-left-color: #f59e0b;
+}
+.solution-card h2 {
+  color: #1f2937;
+  margin-bottom: 12px;
+  font-size: 20px;
+}
+.solution-card p {
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.steps {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+}
+.steps ol {
+  padding-left: 24px;
+  margin: 12px 0;
+}
+.steps li {
+  margin-bottom: 12px;
+  color: #374151;
+}
+.code-block {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 16px;
+  border-radius: 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  margin: 16px 0;
+  overflow-x: auto;
+}
+.code-block span.comment {
+  color: #94a3b8;
+}
+.code-block span.keyword {
+  color: #f472b6;
+}
+.code-block span.string {
+  color: #34d399;
+}
+.important {
+  background: #fef2f2;
+  border: 2px solid #fecaca;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0;
+}
+.important h3 {
+  color: #dc2626;
+  margin-bottom: 12px;
+}
+.btn {
+  display: inline-block;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  color: white;
+  text-decoration: none;
+  padding: 14px 32px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 8px;
+  cursor: pointer;
+  transition: all .2s;
+  border: none;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102,126,234,.3);
+}
+.btn-success {
+  background: #10b981;
+}
+.btn-warning {
+  background: #f59e0b;
+}
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 24px 0;
+}
+.status-info {
+  background: #dbeafe;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 20px 0;
+  text-align: center;
+}
+.status-info h3 {
+  color: #1d4ed8;
+  margin-bottom: 8px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🌐 公网访问解决方案</h1>
+  
+  <div class="solution-card success">
+    <h2>✅ 方案一：使用云服务（最简单）</h2>
+    <p>将问卷系统部署到免费的云平台，获得公网访问地址：</p>
+    
+    <div class="steps">
+      <h3>推荐平台：</h3>
+      <ol>
+        <li><strong>GitHub Pages</strong> - 免费静态网站托管
+          <ul style="margin-top: 8px; padding-left: 20px; color: #6b7280; font-size: 14px;">
+            <li>上传问卷HTML文件到GitHub仓库</li>
+            <li>开启GitHub Pages功能</li>
+            <li>获得：https://[用户名].github.io/[仓库名]/</li>
+          </ul>
+        </li>
+        <li><strong>Vercel</strong> - 免费部署，支持HTTPS
+          <ul style="margin-top: 8px; padding-left: 20px; color: #6b7280; font-size: 14px;">
+            <li>拖拽上传文件夹</li>
+            <li>自动生成域名</li>
+            <li>全球CDN加速</li>
+          </ul>
+        </li>
+        <li><strong>Netlify</strong> - 类似Vercel，也很简单</li>
+      </ol>
+    </div>
+    
+    <div class="btn-group">
+      <button class="btn btn-success" onclick="window.open('https://github.com/', '_blank')">🚀 前往GitHub</button>
+      <button class="btn" onclick="window.open('https://vercel.com/', '_blank')">⚡ 前往Vercel</button>
+    </div>
+  </div>
+  
+  <div class="solution-card">
+    <h2>🔧 方案二：路由器端口转发（需要配置）</h2>
+    <p>在你的路由器上设置端口转发，让外网能访问本地服务器：</p>
+    
+    <div class="steps">
+      <h3>操作步骤：</h3>
+      <ol>
+        <li>登录路由器管理页面（通常是192.168.1.1）</li>
+        <li>找到"端口转发"或"虚拟服务器"设置</li>
+        <li>添加新规则：
+          <ul style="margin-top: 8px; padding-left: 20px; color: #6b7280; font-size: 14px;">
+            <li>内部IP：192.168.1.152</li>
+            <li>内部端口：8899</li>
+            <li>外部端口：8899（或其他）</li>
+            <li>协议：TCP</li>
+          </ul>
+        </li>
+        <li>保存设置，重启路由器</li>
+        <li>获取公网IP（百度搜"我的IP"）</li>
+        <li>访问：http://[公网IP]:8899/</li>
+      </ol>
+    </div>
+    
+    <div class="code-block">
+      <span class="comment">// 访问地址示例：</span><br>
+      <span class="keyword">http://</span><span class="string">123.123.123.123</span>:8899/
+    </div>
+  </div>
+  
+  <div class="solution-card warning">
+    <h2>⚠️ 方案三：使用内网穿透工具（技术性较强）</h2>
+    <p>需要安装和配置工具：</p>
+    
+    <div class="steps">
+      <h3>可选工具：</h3>
+      <ol>
+        <li><strong>ngrok</strong> - 简单但需要注册
+          <div class="code-block" style="margin: 8px 0;">
+            <span class="comment"># 需要注册账号获取token</span><br>
+            ngrok http 8899
+          </div>
+        </li>
+        <li><strong>frp</strong> - 免费开源，需要服务器
+          <div class="code-block" style="margin: 8px 0;">
+            <span class="comment"># 需要自己搭建frp服务器</span><br>
+            frpc -c frpc.ini
+          </div>
+        </li>
+        <li><strong>ZeroTier</strong> - 创建虚拟局域网
+          <div class="code-block" style="margin: 8px 0;">
+            <span class="comment"># 安装客户端，加入网络</span><br>
+            zerotier-cli join [网络ID]
+          </div>
+        </li>
+      </ol>
+    </div>
+  </div>
+  
+  <div class="important">
+    <h3>📋 立即行动建议</h3>
+    <p><strong>推荐顺序：</strong></p>
+    <ol style="padding-left: 20px; margin: 12px 0;">
+      <li><strong>首选方案一</strong>：使用GitHub Pages或Vercel，最简单</li>
+      <li><strong>次选方案二</strong>：配置路由器端口转发</li>
+      <li><strong>最后方案三</strong>：使用内网穿透工具</li>
+    </ol>
+    <p style="margin-top: 12px;">如果你需要我帮你部署到GitHub Pages，请告诉我你的GitHub账号。</p>
+  </div>
+  
+  <div class="status-info">
+    <h3>📊 当前状态</h3>
+    <p>✅ 服务器运行中：192.168.1.152:8899</p>
+    <p>⚠️ 仅限于局域网访问</p>
+    <p>🌐 需要公网访问请选择上述方案</p>
+  </div>
+  
+  <div class="btn-group">
+    <button class="btn" onclick="window.open('http://192.168.1.152:8899/', '_blank')">🏠 测试局域网访问</button>
+    <button class="btn btn-warning" onclick="window.open('https://whatismyipaddress.com/', '_blank')">🌍 查看公网IP</button>
+    <button class="btn btn-success" onclick="window.open('https://pages.github.com/', '_blank')">📚 GitHub Pages教程</button>
+  </div>
+</div>
+
+<script>
+// 添加一些交互功能
+function testLocalAccess() {
+  const testUrl = 'http://192.168.1.152:8899/';
+  window.open(testUrl, '_blank');
+}
+
+function checkPublicIP() {
+  window.open('https://ipchicken.com/', '_blank');
+}
+</script>
+</body>
+</html>

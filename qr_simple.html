@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问卷二维码</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f5f5f5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.container {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 10px 40px rgba(0,0,0,.1);
+  text-align: center;
+}
+h1 {
+  color: #1f2937;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+.qr-container {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  border: 2px solid #e5e7eb;
+  margin: 20px 0;
+  display: inline-block;
+}
+.qr-code {
+  width: 300px;
+  height: 300px;
+  background: white;
+}
+.url-box {
+  background: #f3f4f6;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  font-family: monospace;
+  font-size: 16px;
+  word-break: break-all;
+  margin: 20px 0;
+  color: #1f2937;
+  text-align: center;
+}
+.instructions {
+  background: #f0f9ff;
+  border-left: 4px solid #0ea5e9;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 24px 0;
+  text-align: left;
+}
+.instructions ol {
+  padding-left: 20px;
+  margin: 12px 0;
+}
+.instructions li {
+  margin-bottom: 10px;
+  color: #374151;
+}
+.important {
+  background: #fef2f2;
+  border-left: 4px solid #ef4444;
+  padding: 16px;
+  border-radius: 12px;
+  margin: 20px 0;
+  text-align: left;
+}
+.important h3 {
+  color: #dc2626;
+  margin-bottom: 8px;
+}
+.btn {
+  display: inline-block;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  color: white;
+  text-decoration: none;
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 8px;
+  cursor: pointer;
+  transition: all .2s;
+  border: none;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102,126,234,.3);
+}
+.network-status {
+  margin-top: 20px;
+  padding: 12px;
+  background: #ecfdf5;
+  border-radius: 10px;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📱 问卷访问二维码</h1>
+  <p>请使用手机扫码访问问卷系统</p>
+  
+  <div class="qr-container">
+    <div class="qr-code" id="qrCode">
+      <!-- QR码将通过JavaScript生成 -->
+      <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6b7280;">
+        二维码生成中...
+      </div>
+    </div>
+  </div>
+  
+  <div class="url-box" id="urlDisplay">
+    http://192.168.1.152:8899/
+  </div>
+  
+  <button class="btn" onclick="copyUrl()">📋 复制链接</button>
+  <button class="btn" onclick="window.open('http://192.168.1.152:8899/', '_blank')">🌐 直接访问</button>
+  
+  <div class="instructions">
+    <h3>📝 使用说明：</h3>
+    <ol>
+      <li>确保手机和问卷服务器连接<b>同一个Wi-Fi网络</b></li>
+      <li>使用手机相机或微信扫码功能扫描上方二维码</li>
+      <li>扫码后会自动打开问卷页面</li>
+      <li>如果无法访问，请检查Wi-Fi连接</li>
+    </ol>
+  </div>
+  
+  <div class="important">
+    <h3>⚠️ 重要提醒</h3>
+    <p><strong>手机流量无法访问！</strong>必须连接与服务器相同的Wi-Fi网络。</p>
+    <p>如果你在使用移动数据，请切换到与问卷服务器相同的Wi-Fi。</p>
+  </div>
+  
+  <div class="network-status">
+    ✅ 服务器状态：运行中 (192.168.1.152:8899)
+  </div>
+</div>
+
+<script>
+// 使用第三方服务生成二维码
+function generateQRCode() {
+  const url = "http://192.168.1.152:8899/";
+  const qrContainer = document.getElementById('qrCode');
+  
+  // 使用QRCode.js生成二维码
+  // 先清空容器
+  qrContainer.innerHTML = '';
+  
+  // 创建canvas元素
+  const canvas = document.createElement('canvas');
+  canvas.width = 300;
+  canvas.height = 300;
+  canvas.style.display = 'block';
+  canvas.style.margin = '0 auto';
+  qrContainer.appendChild(canvas);
+  
+  // 使用谷歌的QR码API
+  const qrImageUrl = `https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=${encodeURIComponent(url)}&choe=UTF-8`;
+  
+  const img = document.createElement('img');
+  img.src = qrImageUrl;
+  img.alt = "问卷二维码";
+  img.style.width = '100%';
+  img.style.height = '100%';
+  img.style.borderRadius = '8px';
+  
+  qrContainer.innerHTML = '';
+  qrContainer.appendChild(img);
+}
+
+// 复制链接到剪贴板
+function copyUrl() {
+  const url = "http://192.168.1.152:8899/";
+  navigator.clipboard.writeText(url).then(() => {
+    alert('✅ 链接已复制到剪贴板！');
+  }).catch(err => {
+    console.error('复制失败:', err);
+    // 备用方法
+    const textArea = document.createElement('textarea');
+    textArea.value = url;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    alert('✅ 链接已复制！');
+  });
+}
+
+// 页面加载完成后生成二维码
+window.addEventListener('load', generateQRCode);
+</script>
+</body>
+</html>

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>问卷调查</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -239,8 +240,13 @@ function collectAnswers() {
   return answers;
 }
 
+// ── Supabase 配置 ─────────────────────────────────────
+const SUPABASE_URL = 'https://pfghdtyayoephtgdqxrx.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_9EjDyZQpzVOTas1qjmujnw_rUoCGwNU';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 // ── 提交 ─────────────────────────────────────────────
-function submitSurvey() {
+async function submitSurvey() {
   const name = document.getElementById("input-name").value.trim();
   if (!name) { showError("请先填写您的称呼"); document.getElementById("input-name").focus(); return; }
 
@@ -253,19 +259,24 @@ function submitSurvey() {
     }
   }
 
-  const record = {
-    id: Date.now(),
-    submitTime: new Date().toLocaleString("zh-CN"),
-    name,
-    dept: document.getElementById("input-dept").value.trim() || "未填写",
-    answers,
-    surveyTitle: SURVEY_CONFIG.title
-  };
+  // 保存到 Supabase
+  const { data, error } = await supabase
+    .from('surveys')
+    .insert([
+      {
+        name: name,
+        phone: document.getElementById("input-dept").value.trim() || "未填写",
+        answers: JSON.stringify(answers),
+        submit_time: new Date().toLocaleString("zh-CN"),
+        survey_title: SURVEY_CONFIG.title
+      }
+    ]);
 
-  const key = "survey_responses";
-  const list = JSON.parse(localStorage.getItem(key) || "[]");
-  list.push(record);
-  localStorage.setItem(key, JSON.stringify(list));
+  if (error) {
+    showError("提交失败：" + error.message);
+    console.error('Supabase error:', error);
+    return;
+  }
 
   // 成功页
   document.getElementById("form-area").style.display = "none";

@@ -520,30 +520,29 @@ document.getElementById("pwd-input").focus();
 // ── Supabase 配置 ─────────────────────────────────────
 const SUPABASE_URL = 'https://pfghdtyayoephtgdqxrx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_9EjDyZQpzVOTas1qjmujnw_rUoCGwNU';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── 加载全部数据 ──────────────────────────────────────
 async function loadAll() {
   // 从 Supabase 加载问卷数据
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('surveys')
     .select('*')
     .order('created_at', { ascending: false });
 
   if (error) {
     console.error('Supabase error:', error);
-    showError('加载数据失败：' + error.message);
-    return;
+    allResponses = [];
+  } else {
+    // 转换数据格式
+    allResponses = (data || []).map(row => ({
+      id: row.id,
+      name: row.name,
+      dept: row.phone,
+      answers: typeof row.answers === 'string' ? JSON.parse(row.answers) : (row.answers || {}),
+      submitTime: row.submit_time
+    }));
   }
-
-  // 转换数据格式
-  allResponses = data.map(row => ({
-    id: row.id,
-    name: row.name,
-    dept: row.phone, // 手机号码
-    answers: typeof row.answers === 'string' ? JSON.parse(row.answers) : row.answers,
-    submitTime: row.submit_time
-  }));
 
   const saved = localStorage.getItem("survey_config");
   surveyConfig = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_CONFIG));
@@ -927,7 +926,7 @@ function exportCSV() {
 // ── 清除数据 ──────────────────────────────────────────
 async function clearData() {
   if (confirm("⚠️ 确定清除所有回复数据？此操作不可恢复！") && confirm("再次确认：将删除所有回复记录，继续？")) {
-    const { error } = await supabase.from('surveys').delete().neq('id', 0);
+    const { error } = await sb.from('surveys').delete().neq('id', 0);
     if (error) {
       alert('清除失败：' + error.message);
     } else {
@@ -943,7 +942,7 @@ function escHtml(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&
 // 自动刷新（从 Supabase 加载最新数据）
 setInterval(async () => {
   if (document.getElementById("login-overlay").style.display === "none") {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('surveys')
       .select('*')
       .order('created_at', { ascending: false });

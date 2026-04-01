@@ -865,7 +865,7 @@ function showDetail(id) {
   document.getElementById("modal-title").textContent = r.name + " 的答题详情";
   let html = `
     <div class="detail-row"><div class="detail-q">提交时间</div><div class="detail-a">${r.submitTime}</div></div>
-    <div class="detail-row"><div class="detail-q">遇到的问题</div><div class="detail-a">${r.dept}</div></div>`;
+    <div class="detail-row"><div class="detail-q">手机号码</div><div class="detail-a">${r.dept}</div></div>`;
   if (surveyConfig) {
     surveyConfig.questions.forEach(q => {
       const ans = r.answers[q.id];
